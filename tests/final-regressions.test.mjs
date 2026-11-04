@@ -13,11 +13,16 @@ test('malformed POST responds 400 and subsequent valid POST stays available',asy
  assert.equal(await run('//[]'),400);
  assert.equal(await run('/api/contact'),503);
 });
-test('form cannot submit private fields before JavaScript initializes',async()=>{
+test('public contact keeps Telegram and local demo disabled without JavaScript',async()=>{
  const html=await readFile(new URL('../public/index.html',import.meta.url),'utf8');
- assert.match(html,/<form id="contact-form" method="post" action="\/api\/contact">/);
- assert.match(html,/<fieldset[^>]*disabled/);
- assert.match(html,/<noscript>/);
+ assert.match(html, /<fieldset disabled>/);
+ assert.match(html, /данные никуда не отправляются и не сохраняются/);
  const js=await readFile(new URL('../public/app.js',import.meta.url),'utf8');
- assert.ok(js.lastIndexOf('fieldset.disabled = false')>js.indexOf("form.addEventListener('submit'"));
+ assert.doesNotMatch(js, /fetch\(|XMLHttpRequest|localStorage|sessionStorage|sendBeacon/);
+ assert.match(js, /event.preventDefault\(\)/);
+ const portable=await readFile(new URL('../index.html',import.meta.url),'utf8');
+ assert.doesNotMatch(portable, /(?:src|href)="\//);
+ assert.doesNotMatch(portable, /<script[^>]+src=|<link[^>]+stylesheet/);
+ assert.match(html,/href="https:\/\/t.me\/ChikarAK"/);
 });
+

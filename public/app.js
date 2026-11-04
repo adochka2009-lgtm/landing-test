@@ -6,11 +6,12 @@
     nav.id = 'main-navigation';
     const toggle = document.createElement('button');
     toggle.type = 'button';
+    toggle.innerHTML = '<span></span><span></span><span></span>'; 
     toggle.className = 'menu-toggle';
     toggle.setAttribute('aria-controls', nav.id);
     const setOpen = (open) => {
       toggle.setAttribute('aria-expanded', String(open));
-      toggle.textContent = open ? 'Закрыть меню ×' : 'Меню +';
+      toggle.setAttribute('aria-label', open ? 'Закрыть меню' : 'Открыть меню');
       nav.classList.toggle('is-open', open);
     };
     setOpen(false);
@@ -78,63 +79,99 @@
   }
 })();
 
-// Contact delivery: success requires a confirmed server response.
+// Reveal once, with immediate visibility for keyboard and reduced-motion users.
 (() => {
-  const form = document.querySelector('#contact-form');
-  if (!form) return;
-  form.noValidate = true;
-  const button = form.querySelector('button');
-  const status = document.querySelector('#form-status');
-  const messages = {contact:'Укажите контакт длиной от 3 до 200 символов.',task:'Опишите задачу: от 10 до 3000 символов.',direction:'Выберите направление из списка.'};
-  const errors = {};
-  for (const name of Object.keys(messages)) {
-    const field = form.elements[name];
-    const error = document.createElement('p');
-    error.id = `${name}-error`;
-    error.className = 'field-error';
-    field.setAttribute('aria-describedby', error.id);
-    field.after(error);
-    errors[name] = error;
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const desktop = window.matchMedia('(min-width: 901px) and (pointer: fine)');
+  const targets = document.querySelectorAll('main section, .project, .services article, .steps article, .demo, .contact-panel');
+  let revealObserver;
+  const reveal = (element) => {
+    element.classList.remove('reveal-pending');
+    if (revealObserver) revealObserver.unobserve(element);
+  };
+  if ('IntersectionObserver' in window && !reducedMotion.matches) {
+    revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) reveal(entry.target);
+      });
+    }, { threshold: 0, rootMargin: '0px 0px -24px 0px' });
+    targets.forEach((element) => {
+      // Above-the-fold content paints immediately, including deep-linked sections.
+      const rect = element.getBoundingClientRect();
+      element.classList.add('reveal-ready');
+      if (rect.top >= window.innerHeight && !element.contains(document.activeElement)) {
+        element.classList.add('reveal-pending');
+        revealObserver.observe(element);
+      }
+    });
   }
-  let sending = false;
-  form.addEventListener('submit', async event => {
-    event.preventDefault();
-    if (sending) return;
-    const data = Object.fromEntries(new FormData(form));
-    let first;
-    for (const name of Object.keys(messages)) {
-      const value = data[name].trim();
-      const invalid = name === 'direction' ? !['unknown','website','app','agent'].includes(value) : value.length < (name === 'contact' ? 3 : 10) || value.length > (name === 'contact' ? 200 : 3000);
-      errors[name].textContent = invalid ? messages[name] : '';
-      form.elements[name].setAttribute('aria-invalid', String(invalid));
-      if (invalid && !first) first = form.elements[name];
-    }
-    if (first) {status.textContent = 'Проверьте отмеченные поля.'; first.focus(); return;}
-    sending = true;
-    button.disabled = true;
-    button.textContent = 'Отправляем…';
-    form.setAttribute('aria-busy','true');
-    status.textContent = 'Отправляем задачу…';
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 12000);
-    try {
-      const response = await fetch('/api/contact', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data),signal:controller.signal});
-      if (response.status === 429) throw Error('rate_limited');
-      const result = await response.json();
-      if (response.status !== 200 || result.ok !== true) throw Error('delivery');
-      status.textContent = 'Задача отправлена. Спасибо! Свяжусь с вами по указанному контакту';
-      form.reset();
-    } catch (error) {
-      status.textContent = error.message === 'rate_limited' ? 'Слишком много попыток. Подождите минуту и попробуйте снова. Введённые данные остаются в форме.' : 'Не удалось подтвердить отправку. Введённые данные остаются в форме. Канал доставки пока не подключён или недоступен. Автоматического повтора не будет.';
-    } finally {
-      clearTimeout(timer);
-      sending = false;
-      button.disabled = false;
-      button.textContent = 'Отправить задачу ↗';
-      form.setAttribute('aria-busy','false');
-    }
+  document.addEventListener('focusin', (event) => {
+    targets.forEach((element) => {
+      if (element.contains(event.target)) reveal(element);
+    });
   });
-  const fieldset = form.querySelector('fieldset');
-  fieldset.disabled = false;
+  const hero = document.querySelector('.hero');
+  let heroVisible = false;
+  let frame = 0;
+  let listening = false;
+  const paint = () => {
+    frame = 0;
+    if (!hero) return;
+    const drift = Math.max(-30, Math.min(30, -hero.getBoundingClientRect().top * 0.055));
+    hero.style.setProperty('--hero-drift', `${drift.toFixed(2)}px`);
+  };
+  const schedule = () => {
+    if (!frame) frame = requestAnimationFrame(paint);
+  };
+  const sync = () => {
+    if (reducedMotion.matches) targets.forEach(reveal);
+    const active = heroVisible && desktop.matches && !reducedMotion.matches;
+    if (active && !listening) {
+      window.addEventListener('scroll', schedule, { passive: true });
+      listening = true;
+      schedule();
+    } else if (!active) {
+      window.removeEventListener('scroll', schedule);
+      listening = false;
+      cancelAnimationFrame(frame);
+      frame = 0;
+      if (hero) hero.style.removeProperty('--hero-drift');
+    }
+  };
+  if (hero && 'IntersectionObserver' in window) {
+    const heroObserver = new IntersectionObserver(([entry]) => {
+      heroVisible = entry.isIntersecting;
+      sync();
+    });
+    heroObserver.observe(hero);
+  }
+  reducedMotion.addEventListener('change', sync);
+  desktop.addEventListener('change', sync);
 })();
 
+(() => {
+ const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+ const top = document.querySelector('#back-top');
+ const sync = () => { top.hidden = window.scrollY < 500; };
+ window.addEventListener('scroll', sync, {passive:true}); sync();
+ top.addEventListener('click', () => { window.scrollTo({top:0,behavior:reduced.matches?'instant':'smooth'}); document.querySelector('.brand').focus({preventScroll:true}); });
+ const form = document.querySelector('#demo-form');
+ form.addEventListener('submit', event => {
+  event.preventDefault();
+  for (const field of form.querySelectorAll('input,textarea')) field.value = field.value.trim();
+  if (!form.reportValidity()) return;
+  const status = document.querySelector('#demo-status');
+  status.textContent = 'Демонстрация завершена. Сообщение не отправлено';
+  status.classList.remove('demo-success'); void status.offsetWidth; status.classList.add('demo-success');
+ });
+ form.querySelector('fieldset').disabled = false;
+ const counters = document.querySelectorAll('[data-count]');
+ if (!('IntersectionObserver' in window) || reduced.matches) return;
+ const observer = new IntersectionObserver(entries => entries.forEach(entry => {
+  if (!entry.isIntersecting) return;
+  observer.unobserve(entry.target);
+  const end = Number(entry.target.dataset.count), start = performance.now();
+  const tick = now => { const progress = reduced.matches ? 1 : Math.min(1,(now-start)/850); entry.target.textContent = String(Math.round(end*progress)); if(progress<1) requestAnimationFrame(tick); };
+  requestAnimationFrame(tick);
+ })); counters.forEach(counter => observer.observe(counter));
+})();

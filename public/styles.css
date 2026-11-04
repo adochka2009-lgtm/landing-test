@@ -1,9 +1,9 @@
 :root {
-  --bg:#f5f3ee;
-  --ink:#17191d;
-  --muted:#555b65;
-  --line:#d8d5ce;
-  --blue:#3155e7
+  --bg:#0d101b;
+  --ink:#f2f0fa;
+  --muted:#adb2c8;
+  --line:#30364c;
+  --blue:#b4a5ff;--paper:#171c2d;color-scheme:dark
 }
 * {
   box-sizing:border-box
@@ -36,7 +36,7 @@ a,button,summary,input,select {
   position:fixed;
   top:-100px;
   left:20px;
-  background:white;
+  background:var(--paper);
   padding:12px;
   z-index:20
 }
@@ -154,18 +154,18 @@ h1 i {
   gap:44px;
   padding:17px 23px;
   background:var(--blue);
-  color:white;
+  color:#111322;
   border:0;
   border-radius:5px;
   min-height:56px;
   font-size:15px
 }
 .button:hover {
-  background:#2343c8;
-  color:white
+  background:#c8bcff;
+  color:#111322
 }
 .button:disabled {
-  background:#555b65;
+  background:#343b52;
   cursor:not-allowed
 }
 .text-link {
@@ -183,7 +183,7 @@ h1 i {
   grid-template-columns:1fr auto 1fr auto 1fr;
   gap:30px;
   border-radius:8px;
-  background:linear-gradient(110deg,#eeece6,#faf9f6)
+  background:linear-gradient(110deg,#171c2d,#1d2035)
 }
 .diagram div {
   display:flex;
@@ -263,10 +263,10 @@ p {
   margin-bottom:22px
 }
 .cover-site {
-  background:#deded2
+  background:#222438
 }
 .mini-site {
-  background:#fbfaf4;
+  background:#1b2032;
   position:relative;
   width:100%;
   height:245px;
@@ -293,8 +293,8 @@ p {
 }
 .mini-site i {
   display:inline-block;
-  background:#3a493b;
-  color:white;
+  background:#b4a5ff;
+  color:#111322;
   font-size:7px;
   padding:8px 12px;
   margin-top:15px;
@@ -311,10 +311,10 @@ p {
   transform:rotate(-14deg)
 }
 .cover-app {
-  background:#dce4ef
+  background:#1c263e
 }
 .mini-app {
-  background:#fcfcff;
+  background:#191f33;
   width:100%;
   height:240px;
   padding:20px;
@@ -323,7 +323,7 @@ p {
 }
 .app-bar {
   font:7px Consolas;
-  border-bottom:1px solid #ddd;
+  border-bottom:1px solid var(--line);
   padding-bottom:12px;
   display:flex;
   justify-content:space-between
@@ -340,14 +340,14 @@ p {
 }
 .kanban>div {
   width:50%;
-  background:#f1f2f6;
+  background:#242b41;
   padding:10px
 }
 .kanban small {
   font-size:6px
 }
 .kanban p {
-  background:white;
+  background:var(--paper);
   font-size:8px;
   padding:10px;
   margin:9px 0
@@ -386,7 +386,7 @@ details p {
   margin:0
 }
 .cover-agent {
-  background:#e4e5fa;
+  background:#25213e;
   gap:28px
 }
 .agent-symbol {
@@ -405,7 +405,7 @@ details p {
 }
 .agent-chip {
   font:8px Consolas;
-  border:1px solid #b4b9de;
+  border:1px solid #69618e;
   padding:8px;
   display:inline-block
 }
@@ -442,7 +442,7 @@ details p {
 }
 .demo {
   margin-top:60px;
-  background:#eae8e2;
+  background:#171c2d;
   border-radius:9px;
   padding:35px;
   display:grid;
@@ -457,7 +457,7 @@ details p {
   color:var(--muted)
 }
 .demo-message {
-  background:#fff;
+  background:var(--paper);
   padding:22px;
   border-radius:6px
 }
@@ -490,7 +490,7 @@ details p {
   align-items:center
 }
 .about-art {
-  background:#e8e6de;
+  background:#191e30;
   min-height:410px;
   display:flex;
   flex-direction:column;
@@ -552,8 +552,25 @@ details p {
   max-width:380px;
   color:var(--muted)
 }
+.contact-panel {
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:32px;
+  align-self:start;
+  min-width:0
+}
+.contact-panel h3 {
+  font-size:28px;
+  margin:18px 0
+}
+.contact-panel .button {
+  margin:20px 0 8px;
+  max-width:100%;
+  text-align:center
+}
 form {
-  background:white;
+  background:var(--paper);
   border-radius:10px;
   padding:32px;
   align-self:start
@@ -571,9 +588,9 @@ label span {
 input,textarea,select {
   width:100%;
   min-height:48px;
-  border:1px solid #7d8188;
+  border:1px solid #59627e;
   border-radius:4px;
-  background:#fff;
+  background:var(--paper);
   padding:12px;
   color:var(--ink);
   font-size:14px;
@@ -685,7 +702,16 @@ footer {
     gap:10px
   }
   .brand {
-    font-size:14px
+    font-size:14px;
+    min-width:0;
+    max-width:100%;
+    overflow-wrap:anywhere
+  }
+  .brand-mark {
+    flex-shrink:0
+  }
+  .contact-panel {
+    padding:24px
   }
   nav {
     width:100%;
@@ -869,4 +895,129 @@ a, button, summary { transition: color 180ms ease, background-color 180ms ease; 
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+/* Motion is decorative; the unenhanced document remains fully visible. */
+.hero {
+  position: relative;
+  isolation: isolate;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: 24px;
+  background: radial-gradient(ellipse at 80% 28%, #8871ec25, transparent 58%),
+    radial-gradient(ellipse at 25% 65%, #6178d918, transparent 65%);
+  background-size: 140% 140%;
+  animation: hero-atmosphere 18s ease-in-out infinite alternate;
+  transform: translateY(var(--hero-drift, 0px));
+}
+h1 span {
+  background: linear-gradient(110deg, #b4a5ff, #d3c7ff, #9cafff);
+  background-size: 220% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: hero-heading 14s ease-in-out infinite alternate;
+}
+@keyframes hero-atmosphere {
+  from { background-position: 0% 20%; }
+  to { background-position: 100% 80%; }
+}
+@keyframes hero-heading {
+  from { background-position: 0% 50%; }
+  to { background-position: 100% 50%; }
+}
+.reveal-pending {
+  opacity: 0;
+  translate: 0 22px;
+}
+.reveal-ready {
+  transition: opacity 650ms ease, translate 650ms cubic-bezier(.2,.7,.2,1);
+}
+.project, .services article, .steps article, .demo, .contact-panel {
+  transition: transform 240ms ease, box-shadow 240ms ease;
+}
+.project:focus-within, .services article:focus-within, .steps article:focus-within,
+.demo:focus-within, .contact-panel:focus-within {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 28px -22px #00000080;
+}
+@media (hover: hover) and (pointer: fine) {
+  .project:hover, .services article:hover, .steps article:hover,
+  .demo:hover, .contact-panel:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 28px -22px #00000080;
+  }
+}
+@media (max-width: 900px) {
+  .hero::before { animation: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal-pending { opacity: 1; translate: none; }
+  .hero::before { transform: none; }
+  .project, .services article, .steps article, .demo, .contact-panel {
+    transform: none !important;
+  }
+}
+/* Cards combine entrance and interactive motion without overriding either. */
+.reveal-ready:is(.project, .services article, .steps article, .demo, .contact-panel) {
+  transition: opacity 650ms ease, translate 650ms cubic-bezier(.2,.7,.2,1),
+    transform 240ms ease, box-shadow 240ms ease;
+}
+@media (forced-colors: active) {
+  h1 span {
+    background: none;
+    color: CanvasText;
+    -webkit-text-fill-color: CanvasText;
+  }
+}
+
+.site-stats{display:flex;gap:3rem;flex-wrap:wrap}.site-stats strong{font-size:2.5rem;display:block;font-variant-numeric:tabular-nums}
+#demo-form{max-width:660px}#demo-form fieldset{border:0;padding:0;display:grid;gap:12px}#demo-form input,#demo-form textarea{width:100%;box-sizing:border-box;padding:14px;font:inherit;border:1px solid #777;border-radius:8px;background:var(--paper);color:var(--ink)}#demo-form textarea{min-height:140px}#demo-form button{justify-self:start}.back-top{position:fixed;bottom:20px;right:20px;z-index:20}.back-top[hidden]{display:none}.demo-success{animation:success-pop 500ms ease;background:#233c36;padding:16px;color:#d8f4e9;border-radius:8px}@keyframes success-pop{from{transform:translateY(8px);opacity:.3}to{transform:none;opacity:1}}
+.menu-toggle span{display:block;width:24px;height:2px;background:currentColor;margin:5px 0;transition:transform .2s,opacity .2s}.menu-toggle[aria-expanded="true"] span:nth-child(1){transform:translateY(7px) rotate(45deg)}.menu-toggle[aria-expanded="true"] span:nth-child(2){opacity:0}.menu-toggle[aria-expanded="true"] span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}@media(prefers-reduced-motion:reduce){.demo-success{animation:none}.menu-toggle span{transition:none}}
+
+input::placeholder,textarea::placeholder{color:#a0a8c0;opacity:1}
+.button:disabled{color:#c8cddd}
+.kanban p{color:var(--ink)}
+::selection{background:#64538e;color:#fff}
+
+/* Quiet cosmic canvas: broad light blooms, with calm space behind text. */
+body {
+  background-color: #111624;
+  background-image:
+    radial-gradient(ellipse 85% 650px at 8% 0%, #51438a30, transparent 75%),
+    radial-gradient(ellipse 70% 850px at 100% 18%, #28576c24, transparent 72%),
+    radial-gradient(ellipse 80% 950px at 0% 52%, #51417620, transparent 76%),
+    radial-gradient(ellipse 90% 1000px at 100% 85%, #304e7024, transparent 76%),
+    linear-gradient(165deg, #141a2b 0%, #111624 46%, #171a2c 100%);
+  background-repeat: no-repeat;
+}
+.hero::before {
+  inset: 12px -24px;
+  background:
+    radial-gradient(ellipse at 76% 24%, #9b80ec20, transparent 62%),
+    radial-gradient(ellipse at 18% 80%, #66b8d810, transparent 66%);
+  background-size: 140% 140%;
+  border-radius: 40px;
+}
+.diagram, .contact-panel, .demo-feedback {
+  background-color: #1b2133;
+  border-color: #39415b;
+}
+.site-stats {
+  padding: 28px 32px;
+  border: 1px solid #39415b;
+  border-radius: 20px;
+  background: linear-gradient(120deg, #24263b99, #17253266);
+}
+@media (max-width: 600px) {
+  .hero::before { inset: 8px 0; }
+  .site-stats { padding: 22px; gap: 24px; }
+}
+@media (forced-colors: active) {
+  body, .hero::before, .site-stats { background: Canvas; }
 }
